@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "debug-linux",
+            "program": "${workspaceFolder}/bin/live",
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "cppvsdbg",
+            "request": "launch",
+            "name": "debug-windows",
+            "program": "${workspaceFolder}/bin/live.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
