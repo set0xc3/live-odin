@@ -23,7 +23,6 @@ Window :: struct {
 	node:     lld.Node,
 	child:    lld.Node,
 	handle:   ^sdl.Window,
-	renderer: ^sdl.Renderer,
 	gl_ctx:   sdl.GLContext,
 	title:    string,
 	size:     [2]i32,
@@ -49,7 +48,7 @@ os_init :: proc(ctx: ^OS_Context) {
 	sdl.GL_SetAttribute(.CONTEXT_MAJOR_VERSION, GL_VERSION_MAJOR)
 	sdl.GL_SetAttribute(.CONTEXT_MINOR_VERSION, GL_VERSION_MINOR)
 
-	window := os_window_create(
+	os_window_create(
 		ctx,
 		"Live",
 		{sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED},
@@ -112,51 +111,33 @@ os_window_create :: proc(
 	position: [2]i32,
 	size: [2]i32,
 ) -> (
-	out_window: ^Window,
+	window: ^Window,
 ) {
-	out_window = new(Window)
-	out_window.handle = sdl.CreateWindow(title, position.x, position.y, size.x, size.y, {.OPENGL})
-	if out_window.handle == nil {
-		fmt.eprintln("Failed to create window")
-		free(out_window)
-		return
-	}
-
-	backend_idx: i32 = -1
-	if n := sdl.GetNumRenderDrivers(); n <= 0 {
-		fmt.eprintln("No render drivers available")
-		free(out_window)
-		return
-	} else {
-		for i in 0 ..< n {
-			info: sdl.RendererInfo
-			if err := sdl.GetRenderDriverInfo(i, &info); err == 0 {
-				// NOTE(bill): "direct3d" seems to not work correctly
-				if info.name == "opengl" {
-					backend_idx = i
-					break
-				}
-			}
-		}
-	}
-
-	out_window.renderer = sdl.CreateRenderer(
-		out_window.handle,
-		backend_idx,
-		{.ACCELERATED, .PRESENTVSYNC},
+	window = new(Window)
+	window.handle = sdl.CreateWindow(
+		title,
+		position.x,
+		position.y,
+		size.x,
+		size.y,
+		{.OPENGL, .HIDDEN, .RESIZABLE},
 	)
-
-	if out_window.renderer == nil {
-		fmt.eprintln("SDL.CreateRenderer:", sdl.GetError())
-		free(out_window)
+	if window.handle == nil {
+		fmt.eprintln("Failed to create window")
+		free(window)
 		return
 	}
 
-	out_window.gl_ctx = sdl.GL_CreateContext(out_window.handle)
-	out_window.title = string(title)
-	out_window.position = position
-	out_window.size = size
-	lld.push_back(&ctx.window_list.list, &out_window.node)
+	window.gl_ctx = sdl.GL_CreateContext(window.handle)
+	sdl.GL_MakeCurrent(window.handle, window.gl_ctx)
+
+	window.title = string(title)
+	window.position = position
+	window.size = size
+
+	sdl.ShowWindow(window.handle)
+
+	lld.push_back(&ctx.window_list.list, &window.node)
 	return
 }
 

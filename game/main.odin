@@ -8,6 +8,6 @@ shutdown :: proc() {
 
 }
 
-tick :: proc(t: f32) {
+update :: proc(mem: rawptr) {
 
 }

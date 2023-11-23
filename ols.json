@@ -7,7 +7,7 @@
         },
         {
             "name": "live",
-            "path": "live"
+            "path": "src"
         }
     ],
     "enable_document_symbols": true,

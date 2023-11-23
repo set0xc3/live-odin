@@ -8,11 +8,11 @@ Entity :: struct {
 }
 
 Scene_Context :: struct {
-    entities: sa.Small_Array(1000, ^Entity),
+	entities: sa.Small_Array(1000, ^Entity),
 }
 
 scene_init :: proc(ctx: ^Scene_Context) {
-	
+
 }
 
 scene_entity_create :: proc(ctx: ^Scene_Context) -> (entity: ^Entity) {
