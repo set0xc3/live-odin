@@ -1,44 +1,42 @@
-package live_input
-
-import os "live:os"
+package live
 
 import sdl "vendor:sdl2"
 
-Context :: struct {
+Input_Context :: struct {
 	last_key_code:          [len(sdl.Scancode)]b32,
 	curr_key_code:          [len(sdl.Scancode)]b32,
-	last_mouse_button_code: [len(os.Mouse_Button_Code)]b32,
-	curr_mouse_button_code: [len(os.Mouse_Button_Code)]b32,
+	last_mouse_button_code: [len(Mouse_Button_Code)]b32,
+	curr_mouse_button_code: [len(Mouse_Button_Code)]b32,
 	mouse_position:         [2]f32,
 	mouse_wheel:            [2]f32,
 }
 
-begin :: proc(ctx: ^Context) {
+input_begin :: proc(ctx: ^Input_Context) {
 	ctx.last_key_code = ctx.curr_key_code
 	ctx.last_mouse_button_code = ctx.curr_mouse_button_code
 	ctx.mouse_wheel = 0
 }
 
-key_pressed :: proc(ctx: ^Context, code: sdl.Scancode) -> b32 {
+input_key_pressed :: proc(ctx: ^Input_Context, code: sdl.Scancode) -> b32 {
 	return ctx.last_key_code[code] && ctx.curr_key_code[code]
 }
 
-key_down :: proc(ctx: ^Context, code: sdl.Scancode) -> b32 {
+input_key_down :: proc(ctx: ^Input_Context, code: sdl.Scancode) -> b32 {
 	return !ctx.last_key_code[code] && ctx.curr_key_code[code]
 }
 
-key_up :: proc(ctx: ^Context, code: sdl.Scancode) -> b32 {
+input_key_up :: proc(ctx: ^Input_Context, code: sdl.Scancode) -> b32 {
 	return ctx.last_key_code[code] && !ctx.curr_key_code[code]
 }
 
-mouse_button_pressed :: proc(ctx: ^Context, code: os.Mouse_Button_Code) -> b32 {
+input_mouse_button_pressed :: proc(ctx: ^Input_Context, code: Mouse_Button_Code) -> b32 {
 	return ctx.last_mouse_button_code[code] && ctx.curr_mouse_button_code[code]
 }
 
-mouse_button_down :: proc(ctx: ^Context, code: os.Mouse_Button_Code) -> b32 {
+input_mouse_button_down :: proc(ctx: ^Input_Context, code: Mouse_Button_Code) -> b32 {
 	return !ctx.last_mouse_button_code[code] && ctx.curr_mouse_button_code[code]
 }
 
-mouse_button_up :: proc(ctx: ^Context, code: os.Mouse_Button_Code) -> b32 {
+input_mouse_button_up :: proc(ctx: ^Input_Context, code: Mouse_Button_Code) -> b32 {
 	return ctx.last_mouse_button_code[code] && !ctx.curr_mouse_button_code[code]
 }

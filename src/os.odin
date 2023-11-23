@@ -1,4 +1,4 @@
-package live_os
+package live
 
 import lld "core:container/intrusive/list"
 import "core:fmt"
@@ -34,12 +34,12 @@ Window_List :: struct {
 	list: lld.List,
 }
 
-Context :: struct {
+OS_Context :: struct {
 	is_quit:     b32,
 	window_list: Window_List,
 }
 
-init :: proc(ctx: ^Context) {
+os_init :: proc(ctx: ^OS_Context) {
 	if err := sdl.Init({.VIDEO}); err != 0 {
 		fmt.eprintln(err)
 		return
@@ -49,7 +49,7 @@ init :: proc(ctx: ^Context) {
 	sdl.GL_SetAttribute(.CONTEXT_MAJOR_VERSION, GL_VERSION_MAJOR)
 	sdl.GL_SetAttribute(.CONTEXT_MINOR_VERSION, GL_VERSION_MINOR)
 
-	window := window_create(
+	window := os_window_create(
 		ctx,
 		"Live",
 		{sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED},
@@ -60,29 +60,29 @@ init :: proc(ctx: ^Context) {
 	gl.load_up_to(GL_VERSION_MAJOR, GL_VERSION_MINOR, sdl.gl_set_proc_address)
 }
 
-destroy :: proc(ctx: ^Context) {
+os_destroy :: proc(ctx: ^OS_Context) {
 	sdl.Quit()
 }
 
-delay :: proc(ms: u32) {
+os_delay :: proc(ms: u32) {
 	sdl.Delay(ms)
 }
 
-perf_counter :: proc() -> u64 {
+os_perf_counter :: proc() -> u64 {
 	return sdl.GetPerformanceCounter()
 }
 
 
-perf_frequency :: proc() -> u64 {
+os_perf_frequency :: proc() -> u64 {
 	return sdl.GetPerformanceFrequency()
 }
 
-event_next :: proc() -> (out_event: sdl.Event, out_event_ok: b32) {
+os_event_next :: proc() -> (out_event: sdl.Event, out_event_ok: b32) {
 	out_event_ok = b32(sdl.PollEvent(&out_event))
 	return
 }
 
-process_event :: proc(ctx: ^Context, event: ^sdl.Event) {
+os_process_event :: proc(ctx: ^OS_Context, event: ^sdl.Event) {
 	#partial switch event.type {
 	case .QUIT:
 		ctx.is_quit = true
@@ -106,8 +106,8 @@ process_event :: proc(ctx: ^Context, event: ^sdl.Event) {
 	}
 }
 
-window_create :: proc(
-	ctx: ^Context,
+os_window_create :: proc(
+	ctx: ^OS_Context,
 	title: cstring,
 	position: [2]i32,
 	size: [2]i32,
@@ -160,7 +160,7 @@ window_create :: proc(
 	return
 }
 
-window_destroy :: proc(window: ^Window) {
+os_window_destroy :: proc(window: ^Window) {
 	if window != nil {
 		sdl.GL_DeleteContext(window.gl_ctx)
 		sdl.DestroyWindow(window.handle)
@@ -168,6 +168,6 @@ window_destroy :: proc(window: ^Window) {
 	}
 }
 
-window_flush :: proc(window: ^Window) {
+os_window_flush :: proc(window: ^Window) {
 	sdl.GL_SwapWindow(window.handle)
 }

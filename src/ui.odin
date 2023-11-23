@@ -1,19 +1,17 @@
-package live_ui
-
-import os "live:os"
+package live
 
 import fmt "core:fmt"
 
 import mu "vendor:microui"
 import sdl "vendor:sdl2"
 
-Context :: struct {
+UI_Context :: struct {
 	mu_ctx:        ^mu.Context,
 	bg:            mu.Color,
 	atlas_texture: ^sdl.Texture,
 }
 
-init :: proc(ctx: ^Context) {
+ui_init :: proc(ctx: ^UI_Context) {
 	ctx.mu_ctx = new(mu.Context);defer free(ctx.mu_ctx)
 	ctx.bg = {90, 95, 100, 255}
 
@@ -23,11 +21,11 @@ init :: proc(ctx: ^Context) {
 	ctx.mu_ctx.text_height = mu.default_atlas_text_height
 }
 
-being :: proc(ctx: ^Context) {
+ui_being :: proc(ctx: ^UI_Context) {
 	mu.begin(ctx.mu_ctx)
 }
 
-end :: proc(ctx: ^Context) {
+ui_end :: proc(ctx: ^UI_Context) {
 	mu.end(ctx.mu_ctx)
 
 	command_backing: ^mu.Command
@@ -70,12 +68,12 @@ end :: proc(ctx: ^Context) {
 	// sdl.RenderPresent(ctx.renderer)
 }
 
-on_mouse_motion :: proc(ctx: ^Context, motion: [2]f32) {}
+ui_on_mouse_motion :: proc(ctx: ^UI_Context, motion: [2]f32) {}
 
-on_mouse_wheel :: proc(ctx: ^Context, wheel: [2]f32) {}
+ui_on_mouse_wheel :: proc(ctx: ^UI_Context, wheel: [2]f32) {}
 
-on_mouse_button :: proc(ctx: ^Context, is_down: b32, code: os.Mouse_Button_Code) {}
+ui_on_mouse_button :: proc(ctx: ^UI_Context, is_down: b32, code: Mouse_Button_Code) {}
 
-on_key :: proc(ctx: ^Context, is_down: b32, code: sdl.Scancode) {}
+ui_on_key :: proc(ctx: ^UI_Context, is_down: b32, code: sdl.Scancode) {}
 
-on_text_input :: proc(ctx: ^Context, input: string) {}
+ui_on_text_input :: proc(ctx: ^UI_Context, input: string) {}

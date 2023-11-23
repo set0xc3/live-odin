@@ -4,12 +4,7 @@
   - [/] graphics: добавить буферы
 */
 
-package main
-
-import gfx "live:gfx"
-import input "live:input"
-import os "live:os"
-import ui "live:ui"
+package live
 
 import lld "core:container/intrusive/list"
 import sa "core:container/small_array"
@@ -20,23 +15,28 @@ import "core:time"
 import gl "vendor:OpenGL"
 import sdl "vendor:sdl2"
 
-gfx_ctx: ^gfx.Context
-input_ctx: ^input.Context
-os_ctx: ^os.Context
-ui_ctx: ^ui.Context
+gfx_ctx: ^GFX_Context
+input_ctx: ^Input_Context
+os_ctx: ^OS_Context
+scene_ctx: ^Scene_Context
+ui_ctx: ^UI_Context
 
 main :: proc() {
-	gfx_ctx = new(gfx.Context)
-	input_ctx = new(input.Context)
-	os_ctx = new(os.Context)
-	ui_ctx = new(ui.Context)
+	gfx_ctx = new(GFX_Context)
+	input_ctx = new(Input_Context)
+	os_ctx = new(OS_Context)
+	scene_ctx = new(Scene_Context)
+	ui_ctx = new(UI_Context)
 
-	os.init(os_ctx)
-	gfx.init(gfx_ctx)
-	ui.init(ui_ctx)
+	gfx_init(gfx_ctx)
+	os_init(os_ctx)
+	scene_init(scene_ctx)
+	ui_init(ui_ctx)
 
 	// high precision timer
 	start_tick := time.tick_now()
+
+	camera := transform_init()
 
 	loop: for {
 		if os_ctx.is_quit {
@@ -46,32 +46,35 @@ main :: proc() {
 		duration := time.tick_since(start_tick)
 		t := f32(time.duration_seconds(duration))
 
-		event, event_ok := os.event_next()
-		os.process_event(os_ctx, &event)
+		event, event_ok := os_event_next()
+		os_process_event(os_ctx, &event)
 
-		pos := gfx.Vector3{}
-		model := glm.identity(glm.mat4)
-		model *= glm.mat4Translate(pos)
-		view := glm.mat4LookAt({0, 0, 4}, {0, 0, 0}, {0, 1, 0})
-		proj := glm.mat4Perspective(
-			45,
-			os.DEFAULT_WINDOW_WIDTH / os.DEFAULT_WINDOW_HEIGHT,
-			0.1,
-			100.0,
-		)
-		u_transform := proj * view * model
+		// // Camera
+		// view := glm.mat4LookAt({0, 0, 10}, {0, 0, 0}, {0, 1, 0})
+		// proj := glm.mat4Perspective(
+		// 	45,
+		// 	DEFAULT_WINDOW_WIDTH / DEFAULT_WINDOW_HEIGHT,
+		// 	0.1,
+		// 	100.0,
+		// )
 
-		gfx.begin(os.DEFAULT_WINDOW_WIDTH, os.DEFAULT_WINDOW_HEIGHT)
-		gfx.shader_bind(gfx_ctx.default_shader)
-		gfx.shader_set_uniform_mat4(gfx_ctx.default_shader, "u_transform", &u_transform[0, 0])
-		gfx.flush()
+		// for i := 0; i < entities.len; i += 1 {
+		// 	model := transform_get_model_matrix(&entities.data[i].transform)
 
-		it := lld.iterator_head(os_ctx.window_list.list, os.Window, "node")
-		for window in lld.iterate_next(&it) {
-			sdl.GL_MakeCurrent(window.handle, window.gl_ctx)
-			os.window_flush(window)
-		}
+		// 	u_transform := proj * view * model
 
-		os.delay(1)
+		// 	gfx_begin(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT)
+		// 	gfx_shader_bind(gfx_ctx.default_shader)
+		// 	gfx_shader_set_uniform_mat4(gfx_ctx.default_shader, "u_transform", &u_transform[0, 0])
+		// 	gfx_flush()
+		// }
+
+		// it := lld.iterator_head(os_ctx.window_list.list, Window, "node")
+		// for window in lld.iterate_next(&it) {
+		// 	sdl.GL_MakeCurrent(window.handle, window.gl_ctx)
+		// 	os_window_flush(window)
+		// }
+
+		os_delay(1)
 	}
 }
