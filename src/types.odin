@@ -28,7 +28,6 @@ Texture :: struct {
 	uuid: string,
 }
 
-
 Sprite :: struct {
 	uuid: string,
 	texture: ^Texture,

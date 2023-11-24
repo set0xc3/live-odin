@@ -18,14 +18,6 @@ os_ctx: ^OS_Context
 scene_ctx: ^Scene_Context
 ui_ctx: ^UI_Context
 
-Game_API :: struct {
-	lib:      dynlib.Library,
-	startup:  proc() -> rawptr,
-	shutdown: proc() -> rawptr,
-	update:   proc(mem: rawptr) -> rawptr,
-	api_version: int,
-}
-
 main :: proc() {
 	gfx_ctx = new(GFX_Context)
 	input_ctx = new(Input_Context)
