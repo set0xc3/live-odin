@@ -1,14 +1,10 @@
 {
     "$schema": "https://raw.githubusercontent.com/DanielGavin/ols/master/misc/ols.schema.json",
     "collections": [
-        {
-            "name": "core",
-            "path": "C:\\vault\\bin\\odin\\core"
-        },
-        {
-            "name": "live",
-            "path": "src"
-        }
+        { "name": "core", "path": "C:/vault/bin/odin/core" },
+        { "name": "core", "path": "C:/vault/bin/odin/vendor" },
+        { "name": "core", "path": "C:/vault/bin/odin/examples" },
+        { "name": "live", "path": "src" }
     ],
     "enable_document_symbols": true,
     "enable_semantic_tokens": true,

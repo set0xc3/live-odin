@@ -23,3 +23,13 @@ Shader :: struct {
 	id:   u32,
 	path: string,
 }
+
+Texture :: struct {
+	uuid: string,
+}
+
+
+Sprite :: struct {
+	uuid: string,
+	texture: ^Texture,
+}

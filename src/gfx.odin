@@ -112,10 +112,6 @@ gfx_shader_set_uniform_vec4 :: proc(shader: ^Shader, uniform_str: string, data: 
 gfx_begin :: proc(width, height: i32) {
 	gl.Viewport(0, 0, width, height)
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-
-	// draw_rect({-1, 0, 1, 1}, {1, 0, 0, 1})
-	gfx_draw_rect({0, 0, 1, 1}, {0, 1, 0, 1})
-	// draw_rect({1, 0, 1, 1}, {0, 0, 1, 1})
 }
 
 gfx_flush :: proc() {

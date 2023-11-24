@@ -20,8 +20,6 @@ Mouse_Button_Code :: enum {
 }
 
 Window :: struct {
-	node:     lld.Node,
-	child:    lld.Node,
 	handle:   ^sdl.Window,
 	gl_ctx:   sdl.GLContext,
 	title:    string,
@@ -29,13 +27,9 @@ Window :: struct {
 	position: [2]i32,
 }
 
-Window_List :: struct {
-	list: lld.List,
-}
-
 OS_Context :: struct {
 	is_quit:     b32,
-	window_list: Window_List,
+	root_window: ^Window,
 }
 
 os_init :: proc(ctx: ^OS_Context) {
@@ -137,7 +131,7 @@ os_window_create :: proc(
 
 	sdl.ShowWindow(window.handle)
 
-	lld.push_back(&ctx.window_list.list, &window.node)
+	ctx.root_window = window
 	return
 }
 

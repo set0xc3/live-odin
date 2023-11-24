@@ -1,9 +1,3 @@
-/*
-  Today:
-  - [/] добавить камеру
-  - [/] graphics: добавить буферы
-*/
-
 package live
 
 import lld "core:container/intrusive/list"
@@ -32,30 +26,7 @@ Game_API :: struct {
 	api_version: int,
 }
 
-// load_game_api :: proc(api_version: int) -> (api: Game_API, ok: b32) {
-// 	game_dll_name := fmt.tprintf("game_{0}.dll", api_version)
-
-// 	if libc.system(fmt.ctprintf("copy game.dll {0}", game_dll_name)) != 0 {
-// 		fmt.println("Failed to copy game.dll to {0}", game_dll_name)
-// 		return
-// 	}
-
-// 	game_lib, game_lib_ok := dynlib.load_library(game_dll_name)
-// }
-
 main :: proc() {
-	tracking_allocator: mem.Tracking_Allocator
-	mem.tracking_allocator_init(&tracking_allocator, context.allocator)
-	context.allocator = mem.tracking_allocator(&tracking_allocator)
-
-	reset_tracking_allocator :: proc(a: ^mem.Tracking_Allocator) {
-		for key, value in a.allocation_map {
-			fmt.printf("%v: Leaked %v bytes\n", value.location, value.size)
-		}
-
-		mem.tracking_allocator_clear(a)
-	}
-
 	gfx_ctx = new(GFX_Context)
 	input_ctx = new(Input_Context)
 	os_ctx = new(OS_Context)
@@ -83,31 +54,34 @@ main :: proc() {
 		event, event_ok := os_event_next()
 		os_process_event(os_ctx, &event)
 
-		// // Camera
-		// view := glm.mat4LookAt({0, 0, 10}, {0, 0, 0}, {0, 1, 0})
-		// proj := glm.mat4Perspective(
-		// 	45,
-		// 	DEFAULT_WINDOW_WIDTH / DEFAULT_WINDOW_HEIGHT,
-		// 	0.1,
-		// 	100.0,
-		// )
+		// Camera
+		proj := glm.mat4Ortho3d(0.0, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, 0.0, -1.0, 1.0)
 
-		// for i := 0; i < entities.len; i += 1 {
-		// 	model := transform_get_model_matrix(&entities.data[i].transform)
+		gfx_begin(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT)
 
-		// 	u_transform := proj * view * model
+		gfx_draw_rect({-1, 0, 1, 1}, {1, 0, 0, 1})
 
-		// 	gfx_begin(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT)
-		// 	gfx_shader_bind(gfx_ctx.default_shader)
-		// 	gfx_shader_set_uniform_mat4(gfx_ctx.default_shader, "u_transform", &u_transform[0, 0])
-		// 	gfx_flush()
+		gfx_shader_bind(gfx_ctx.default_shader)
+		model := transform_get_model_matrix(&camera)
+		u_transform := proj * model
+		gfx_shader_set_uniform_mat4(gfx_ctx.default_shader, "u_transform", &u_transform[0, 0])
+
+		// gfx_shader_bind(gfx_ctx.default_shader)
+		// for variant in gfx_next_command_iterator(gfx_ctx) {
+		// 	switch cmd in variant {
+		// 		case ^Command_Rect:
+		// 		gfx_draw_rect({-1, 0, 1, 1}, {1, 0, 0, 1})
+
+		// 		model := transform_get_model_matrix(&cmd.transform)
+		// 		u_transform := proj * view * model
+		// 		gfx_shader_set_uniform_mat4(gfx_ctx.default_shader, "u_transform", &u_transform[0, 0])
+		// 	}
 		// }
 
-		// it := lld.iterator_head(os_ctx.window_list.list, Window, "node")
-		// for window in lld.iterate_next(&it) {
-		// 	sdl.GL_MakeCurrent(window.handle, window.gl_ctx)
-		// 	os_window_flush(window)
-		// }
+		gfx_flush()
+
+		sdl.GL_MakeCurrent(os_ctx.root_window.handle, os_ctx.root_window.gl_ctx)
+		os_window_flush(os_ctx.root_window)
 
 		os_delay(1)
 	}
