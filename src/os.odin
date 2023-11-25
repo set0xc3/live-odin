@@ -38,9 +38,7 @@ os_init :: proc(ctx: ^OS_Context) {
 		return
 	}
 
-	sdl.GL_SetAttribute(.CONTEXT_PROFILE_MASK, i32(sdl.GLprofile.CORE))
-	sdl.GL_SetAttribute(.CONTEXT_MAJOR_VERSION, GL_VERSION_MAJOR)
-	sdl.GL_SetAttribute(.CONTEXT_MINOR_VERSION, GL_VERSION_MINOR)
+	os_gl_init(ctx)
 
 	os_window_create(
 		ctx,
@@ -48,8 +46,13 @@ os_init :: proc(ctx: ^OS_Context) {
 		{sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED},
 		{DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT},
 	)
+}
 
-	// load the OpenGL procedures once an OpenGL context has been established
+os_gl_init :: proc(ctx: ^OS_Context) {
+	sdl.GL_SetAttribute(.CONTEXT_PROFILE_MASK, i32(sdl.GLprofile.CORE))
+	sdl.GL_SetAttribute(.CONTEXT_MAJOR_VERSION, GL_VERSION_MAJOR)
+	sdl.GL_SetAttribute(.CONTEXT_MINOR_VERSION, GL_VERSION_MINOR)
+
 	gl.load_up_to(GL_VERSION_MAJOR, GL_VERSION_MINOR, sdl.gl_set_proc_address)
 }
 
@@ -143,6 +146,11 @@ os_window_destroy :: proc(window: ^Window) {
 	}
 }
 
-os_window_flush :: proc(window: ^Window) {
-	sdl.GL_SwapWindow(window.handle)
+os_gl_begin_render :: proc(ctx: ^OS_Context) {
+	sdl.GL_MakeCurrent(os_ctx.root_window.handle, os_ctx.root_window.gl_ctx)
 }
+
+os_gl_end_render :: proc(ctx: ^OS_Context) {
+	sdl.GL_SwapWindow(ctx.root_window.handle)
+}
+
