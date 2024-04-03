@@ -1,1 +1,1 @@
-odin.exe check src -collection:live=src -debug -show-timings
+odin check src -collection:live=src -debug -show-timings

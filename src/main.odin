@@ -20,8 +20,8 @@ main :: proc() {
 		event, event_ok := os_event_next()
 		os_process_event(os_ctx, &event)
 
-		os_gl_begin_render(os_ctx)
-		os_gl_end_render(os_ctx)
+		// os_gl_begin_render(os_ctx)
+		// os_gl_end_render(os_ctx)
 
 		os_delay(1)
 	}

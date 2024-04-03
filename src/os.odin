@@ -99,6 +99,10 @@ os_process_event :: proc(ctx: ^OS_Context, event: ^sdl.Event) {
 	case .KEYDOWN, .KEYUP:
 		code := event.key.keysym.scancode
 		state := b32(event.key.state)
+
+		if event.key.keysym.sym == .ESCAPE {
+			ctx.is_quit = true
+		}
 	}
 }
 
@@ -153,4 +157,3 @@ os_gl_begin_render :: proc(ctx: ^OS_Context) {
 os_gl_end_render :: proc(ctx: ^OS_Context) {
 	sdl.GL_SwapWindow(ctx.root_window.handle)
 }
-
